@@ -13,21 +13,22 @@
 using namespace std;
 
 //! Efetua a leitura dos parâmetros de execução
-bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip);
+bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, string *port);
 
 int main(int argc, char** argv){
 	bool debug;
     string camera;
     string ip;
+    string port;
 
-	if(argParse(argc, argv, &debug, &camera, &ip)){
+	if(argParse(argc, argv, &debug, &camera, &ip, &port)){
 	    Graphics graphics;
-	    graphics.init(argc, argv, debug, camera, ip);
+	    graphics.init(argc, argv, debug, camera, ip, port);
     }
 	return 0;
 }
 
-bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip){
+bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, string *port){
     namespace bpo = boost::program_options;
 
     //! Declara as opções de inicialização
@@ -36,6 +37,7 @@ bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip){
         ("help,h", "(Optional) produce help message")
         ("camera,c", bpo::value<std::string>()->default_value("tv"), "(Optional) Specify the camera that you want, may be <tv> or <top>.")
         ("ip_state,i", bpo::value<std::string>()->default_value("localhost"), "(Optional) Specify the IP from pc it's running VSS-Vision or VSS-Simulator.")
+        ("port,p", bpo::value<std::string>()->default_value("5555"), "(Optional) Specify the Port to connect from pc it's running VSS-Vision or VSS-Simulator.")
         ("debug,d", "(Optional) open the debug rotine");
     bpo::variables_map vm;
     bpo::store(bpo::parse_command_line(argc, argv, desc), vm);
@@ -57,6 +59,9 @@ bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip){
 
     //! Define o ip do VSS-Vision ou VSS-Simulator
     *ip = vm["ip_state"].as<string>();
+
+    //! Define a porta de comunicação do VSS-Vision ou VSS-Simulator
+    *port = vm["port"].as<string>();
 
     return true;
 }

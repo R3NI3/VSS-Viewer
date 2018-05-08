@@ -37,7 +37,7 @@ protected:
     string ip;
     //! Define se a tela de ajuda deve ser mostrada
     bool help;
-    
+
     //! Largura da janela de desenho
     float width;
     //! Altura da janela de desenho
@@ -76,8 +76,8 @@ public:
     //! Construtor DEFAULT
     Graphics();
 
-    //! Método responsável por inicializar o software 
-    void init(int argc, char** argv, bool debug, string camera, string ip);
+    //! Método responsável por inicializar o software
+    void init(int argc, char** argv, bool debug, string camera, string ip, string port);
 
     //! Método responsável por carregar a thread de desenho.
     void draw_thread();
@@ -131,7 +131,7 @@ public:
     static void drawBall();
 
     //! Método responsável por desenhar a bola no futuro
-    static void drawDebugFutureBall(); 
+    static void drawDebugFutureBall();
 
     //! Método responsável por desenhar o referencial global Pose(0, 0, 0)
     static void drawGlobalReferential();

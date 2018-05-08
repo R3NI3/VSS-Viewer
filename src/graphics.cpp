@@ -32,7 +32,7 @@ int static_score_team_1, static_score_team_2;
 GLUquadric* qobj;
 
 //! Inicializa o vector de robôs com valores default.
-//! O software tem o conceito de times  
+//! O software tem o conceito de times
 Graphics::Graphics(){
     //! Inicializa o time 1
     for(int i = 0 ; i < 3 ; i++){
@@ -50,7 +50,7 @@ Graphics::Graphics(){
 
         robots.push_back(robot);
     }
-    
+
 
     //! Inicializa o time 2
     for(int i = 0 ; i < 3 ; i++){
@@ -79,13 +79,13 @@ Graphics::Graphics(){
 }
 
 //! Inicializa as variaveis de controle, a thread de desenho e as threads de recebimento de informações
-void Graphics::init(int argc, char** argv, bool debug, string camera, string ip){
+void Graphics::init(int argc, char** argv, bool debug, string camera, string ip, string port){
     //! argc e argv da função main devido a glutInit. Veja: [freeglut](http://freeglut.sourceforge.net/).
     this->argc = argc;
     this->argv = argv;
     this->debug = debug;
     this->camera = camera;
-    this->ip = "tcp://" + ip + ":5555";
+    this->ip = "tcp://" + ip + ":" + port;
 
     cameraStatic = camera;
     staticDebug = this->debug;
@@ -115,14 +115,14 @@ void Graphics::init(int argc, char** argv, bool debug, string camera, string ip)
 void Graphics::draw_thread(){
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB | GLUT_MULTISAMPLE);
-    glutInitWindowPosition(5,5); 
-    glutInitWindowSize(width, height); 
+    glutInitWindowPosition(5,5);
+    glutInitWindowSize(width, height);
     glutCreateWindow("VSS-Viewer");
     glutDisplayFunc(drawWorld);
     glutReshapeFunc(changeWindowSize);
     glutKeyboardFunc(getKeyDown);
     glutTimerFunc(5, timerHandler, 0);
-    
+
     initLight();
 
     //! qobj é utilizado para desenhar as rodas
@@ -145,7 +145,7 @@ void Graphics::debug_thread_team1(){
             if(global_debug_team1.step_poses(i).y() != 0 && global_debug_team1.step_poses(i).y() != 0){
                 robots.at(i).has_step = true;
                 robots.at(i).step_pose.x = global_debug_team1.step_poses(i).y() - (130/2.0);
-                robots.at(i).step_pose.y = global_debug_team1.step_poses(i).x() - (170/2.0);   
+                robots.at(i).step_pose.y = global_debug_team1.step_poses(i).x() - (170/2.0);
                 robots.at(i).step_pose.yaw = global_debug_team1.step_poses(i).yaw()*180.0/M_PI;
             }else{
                 robots.at(i).has_step = false;
@@ -157,7 +157,7 @@ void Graphics::debug_thread_team1(){
             if(global_debug_team1.final_poses(i).y() != 0 && global_debug_team1.final_poses(i).y() != 0){
                 robots.at(i).has_final = true;
                 robots.at(i).final_pose.x = global_debug_team1.final_poses(i).y() - (130/2.0);
-                robots.at(i).final_pose.y = global_debug_team1.final_poses(i).x() - (170/2.0);   
+                robots.at(i).final_pose.y = global_debug_team1.final_poses(i).x() - (170/2.0);
                 robots.at(i).final_pose.yaw = global_debug_team1.final_poses(i).yaw()*180.0/M_PI;
             }else{
                 robots.at(i).has_final = false;
@@ -193,10 +193,10 @@ void Graphics::debug_thread_team2(){
             if(global_debug_team2.step_poses(i).y() != 0 && global_debug_team2.step_poses(i).y() != 0){
                 robots.at(i+3).has_step = true;
                 robots.at(i+3).step_pose.x = global_debug_team2.step_poses(i).y() - (130/2.0);
-                robots.at(i+3).step_pose.y = global_debug_team2.step_poses(i).x() - (170/2.0);   
-                robots.at(i+3).step_pose.yaw = global_debug_team2.step_poses(i).yaw()*180.0/M_PI;    
+                robots.at(i+3).step_pose.y = global_debug_team2.step_poses(i).x() - (170/2.0);
+                robots.at(i+3).step_pose.yaw = global_debug_team2.step_poses(i).yaw()*180.0/M_PI;
             }else{
-                robots.at(i+3).has_step = false; 
+                robots.at(i+3).has_step = false;
             }
         }
 
@@ -205,11 +205,11 @@ void Graphics::debug_thread_team2(){
             if(global_debug_team2.final_poses(i).y() != 0 && global_debug_team2.final_poses(i).y() != 0){
                 robots.at(i+3).has_final = true;
                 robots.at(i+3).final_pose.x = global_debug_team2.final_poses(i).y() - (130/2.0);
-                robots.at(i+3).final_pose.y = global_debug_team2.final_poses(i).x() - (170/2.0);   
+                robots.at(i+3).final_pose.y = global_debug_team2.final_poses(i).x() - (170/2.0);
                 robots.at(i+3).final_pose.yaw = global_debug_team2.final_poses(i).yaw()*180.0/M_PI;
             }else{
                 robots.at(i+3).has_final = false;
-            }   
+            }
         }
 
         //! Recebe os caminhos
@@ -243,7 +243,7 @@ void Graphics::state_thread(){
 
         v_ball.x = global_state.balls(0).v_pose().y();
         v_ball.y = global_state.balls(0).v_pose().x();
-        
+
         //! Atualiza as posições dos robôs
         for(int i = 0 ; i < 3 ; i++){
             robots.at(i).team = YELLOW;
@@ -285,7 +285,7 @@ void Graphics::state_thread(){
     }
 }
 
-void Graphics::initLight(void){   
+void Graphics::initLight(void){
     GLfloat luzAmbiente[4] = { 0.35, 0.35, 0.35, 1.0 };
     GLfloat luzDifusa[4] = { 0.05, 0.05, 0.05, 1.0 };
     GLfloat luzEspecular[4] = { 0.5, 0.5, 0.5, 1.0 };
@@ -316,7 +316,7 @@ void Graphics::initLight(void){
 void Graphics::changeWindowSize(GLsizei w, GLsizei h){
     if (h == 0)
         h = 1;
-    
+
     staticWidth = w;
     staticHeight = h;
 
@@ -361,7 +361,7 @@ void Graphics::drawWorld(void){
 
         glRotatef(90.0, 0, 1, 0);
         glTranslatef(-130.0, 0.0, - 0.0);
-    }  
+    }
 
     //! Desenha o referencial global (No sistema de coordenadas da glut)
     drawGlobalReferential();
@@ -414,7 +414,7 @@ void Graphics::drawDebugFutureBall(){
     float radius = 2.3;
     glPushMatrix();
         glLineWidth(2.0f);
-        material(ORANGE); 
+        material(ORANGE);
         //! Desenha a bola em uma origem
         for(float arco = 0 ; arco < 2*M_PI ; arco += 0.05){
             glBegin(GL_LINES);
@@ -512,11 +512,11 @@ void Graphics::drawDebugStepRobot(int i){
     if(robots.at(i).has_step){
         glPushMatrix();
             if(robots.at(i).rgb_color.rgb[0] == 0 && robots.at(i).rgb_color.rgb[1] == 0 && robots.at(i).rgb_color.rgb[2] == 0){
-                material(robots.at(i).color);     
+                material(robots.at(i).color);
             }else{
                 material(robots.at(i).rgb_color);
             }
-        
+
             glBegin(GL_LINES);
                 glVertex3f(2, robots.at(i).pose.x, robots.at(i).pose.y);
                 glVertex3f(2, robots.at(i).step_pose.x, robots.at(i).step_pose.y);
@@ -530,7 +530,7 @@ void Graphics::drawDebugPath(int i){
     glPushMatrix();
         if(robots.at(i).path.poses.size() >= 2){
             if(robots.at(i).rgb_color.rgb[0] == 0 && robots.at(i).rgb_color.rgb[1] == 0 && robots.at(i).rgb_color.rgb[2] == 0){
-                material(robots.at(i).color);     
+                material(robots.at(i).color);
             }else{
                 material(robots.at(i).rgb_color);
             }
@@ -539,7 +539,7 @@ void Graphics::drawDebugPath(int i){
                     glVertex3f(1, robots.at(i).path.poses.at(j).x, robots.at(i).path.poses.at(j).y);
                     glVertex3f(1, robots.at(i).path.poses.at(j+1).x, robots.at(i).path.poses.at(j+1).y);
                 glEnd();
-            } 
+            }
         }
     glPopMatrix();
 }
@@ -552,7 +552,7 @@ void Graphics::drawGlobalReferential(){
             glTranslatef(THICK_THINGS*1.4, pose.x, 2.1+pose.y);
             //glRotatef(0, 1, 0, 0);
             material(RED);
-            glPushMatrix();    
+            glPushMatrix();
                 glScalef(0.6, 0.6, SIZE_ROBOT*0.6);
                 glutSolidCube(1);
             glPopMatrix();
@@ -568,7 +568,7 @@ void Graphics::drawGlobalReferential(){
             glTranslatef(THICK_THINGS*1.4, 2.1+pose.x, pose.y);
             glRotatef(-90, 1, 0, 0);
             material(GREEN);
-            glPushMatrix();    
+            glPushMatrix();
                 glScalef(0.6, 0.6, SIZE_ROBOT*0.6);
                 glutSolidCube(1);
             glPopMatrix();
@@ -584,7 +584,7 @@ void Graphics::drawGlobalReferential(){
             glTranslatef(2.1+(THICK_THINGS*1.4), pose.x, pose.y);
             glRotatef(90, 0, 1, 0);
             material(BLUE);
-            glPushMatrix();    
+            glPushMatrix();
                 glScalef(0.6, 0.6, SIZE_ROBOT*0.6);
                 glutSolidCube(1);
             glPopMatrix();
@@ -660,14 +660,14 @@ void Graphics::drawField(){
         material(WHITE);
         glutSolidCube(1);
     glPopMatrix();
-    
+
     glPushMatrix();
         glTranslatef(THICK_THINGS, -FIELD_DEPTH/2.0, 0);
         glScalef(WALL_HEIGHT, THICK_THINGS, FIELD_WIDTH);
         material(BLACK2);
         glutSolidCube(1);
     glPopMatrix();
-    
+
     glPushMatrix();
         glTranslatef(THICK_THINGS, -FIELD_DEPTH/2.0+(THICK_THINGS/2.0), 0);
         glScalef(WALL_HEIGHT, 0.1, FIELD_WIDTH-(9.0*2.0));
@@ -695,7 +695,7 @@ void Graphics::drawField(){
         material(BLACK2);
         glutSolidCube(1);
     glPopMatrix();
-    
+
     glPushMatrix();
         glTranslatef(THICK_THINGS, -43.2, -FIELD_WIDTH/1.97);
         glScalef(WALL_HEIGHT, WALL_TOPS_B, THICK_THINGS);
@@ -758,7 +758,7 @@ void Graphics::drawField(){
         material(BLACK2);
         glutSolidCube(1);
     glPopMatrix();
-    
+
     glPushMatrix();
         glTranslatef(THICK_THINGS, -44.0, FIELD_WIDTH/1.97);
         glScalef(WALL_HEIGHT, WALL_TOPS_B, THICK_THINGS);
@@ -772,7 +772,7 @@ void Graphics::drawField(){
         material(BLACK2);
         glutSolidCube(1);
     glPopMatrix();
-    
+
     glPushMatrix();
         glTranslatef(THICK_THINGS, -22, FIELD_WIDTH/1.85);
         glScalef(WALL_HEIGHT, THICK_THINGS, GOAL_DEPTH+1.35);
@@ -1076,7 +1076,7 @@ void Graphics::material(Pixel p){
     GLfloat specular[4];
     GLfloat shininess;
 
-    //! Converte RGB (0-255) para RGB (0-1) 
+    //! Converte RGB (0-255) para RGB (0-1)
     diffuse[0] = p.rgb[0]/255.0;   diffuse[1] = p.rgb[1]/255.0;   diffuse[2] = p.rgb[2]/255.0;   diffuse[3] = 1.0;
     ambient[0] = p.rgb[0]/255.0;   ambient[1] = p.rgb[1]/255.0;   ambient[2] = p.rgb[2]/255.0;   ambient[3] = 1.0;
     specular[0] = p.rgb[0]/255.0;  specular[1] = p.rgb[1]/255.0;  specular[2] = p.rgb[2]/255.0;  specular[3] = 1.0;
