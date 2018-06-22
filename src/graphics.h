@@ -35,6 +35,8 @@ protected:
     string camera;
     //! Ip do PC que esteja rodando o VSS-Vision ou VSS-Simulator. Por DEFAULT é localhost ou 127.0.0.1
     string ip;
+    //! Porta na qual ele se conecta
+    int port;
     //! Define se a tela de ajuda deve ser mostrada
     bool help;
 

@@ -36,7 +36,7 @@ bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, st
     desc.add_options()
         ("help,h", "(Optional) produce help message")
         ("camera,c", bpo::value<std::string>()->default_value("tv"), "(Optional) Specify the camera that you want, may be <tv> or <top>.")
-        ("ip_state,i", bpo::value<std::string>()->default_value("localhost"), "(Optional) Specify the IP from pc it's running VSS-Vision or VSS-Simulator.")
+        ("ip_state,i", bpo::value<std::string>()->default_value("127.0.0.1"), "(Optional) Specify the IP from pc it's running VSS-Vision or VSS-Simulator.")
         ("port,p", bpo::value<std::string>()->default_value("5555"), "(Optional) Specify the Port to connect from pc it's running VSS-Vision or VSS-Simulator.")
         ("debug,d", "(Optional) open the debug rotine");
     bpo::variables_map vm;

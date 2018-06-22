@@ -85,7 +85,8 @@ void Graphics::init(int argc, char** argv, bool debug, string camera, string ip,
     this->argv = argv;
     this->debug = debug;
     this->camera = camera;
-    this->ip = "tcp://" + ip + ":" + port;
+    this->port = std::stoi(port);
+    this->ip = ip;
 
     cameraStatic = camera;
     staticDebug = this->debug;
@@ -134,7 +135,9 @@ void Graphics::draw_thread(){
 
 void Graphics::debug_thread_team1(){
     //! Inicializa o recebimento de debug do time amarelo
-    interface_debug_team1.createReceiveDebugTeam1(&global_debug_team1);
+    string addr = "tcp://" + ip + ":" + std::to_string(port+3);
+    cout << addr << endl;
+    interface_debug_team1.createReceiveDebugTeam1(&global_debug_team1, addr);
 
     while(true){
         //! Recebe um pacote novo
@@ -177,12 +180,15 @@ void Graphics::debug_thread_team1(){
             }
             robots.at(i).path = path;
         }
+        usleep(10);
     }
 }
 
 void Graphics::debug_thread_team2(){
     //! Inicializa o recebimento de debug do time azul
-    interface_debug_team2.createReceiveDebugTeam2(&global_debug_team2);
+    string addr = "tcp://" + ip + ":" + std::to_string(port+4);
+    cout << addr << endl;
+    interface_debug_team2.createReceiveDebugTeam2(&global_debug_team2, addr);
 
     while(true){
         //! Recebe um pacote novo
@@ -225,12 +231,14 @@ void Graphics::debug_thread_team2(){
             }
             robots.at(i+3).path = path;
         }
+        usleep(10);
     }
 }
 
 void Graphics::state_thread(){
     //! Inicializa o recebimento de estados do VSS-Vision e VSS-Simulator
-    interface_state.createSocketReceiveState(&global_state, ip);
+    string addr = "tcp://" + ip + ":" + std::to_string(port);
+    interface_state.createSocketReceiveState(&global_state, addr);
 
     while(true){
         //! Recebe um novo pacote
@@ -282,6 +290,7 @@ void Graphics::state_thread(){
         if(global_state.has_name_blue()){
             static_name_team_2 = global_state.name_blue();
         }
+        usleep(10);
     }
 }
 
