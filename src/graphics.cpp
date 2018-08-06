@@ -34,8 +34,32 @@ GLUquadric* qobj;
 //! Inicializa o vector de robôs com valores default.
 //! O software tem o conceito de times
 Graphics::Graphics(){
+    debug = false;
+
+    static_name_team_1 = name_team_1 = "Yellow";
+    static_name_team_2 = name_team_2 = "Blue";
+
+    static_score_team_1 = static_score_team_1 = score_team_1 = score_team_2 = 0;
+    situation = 0;
+}
+
+//! Inicializa as variaveis de controle, a thread de desenho e as threads de recebimento de informações
+void Graphics::init(int argc, char** argv, bool debug, string camera, string ip, string port, bool simple_sim){
+    //! argc e argv da função main devido a glutInit. Veja: [freeglut](http://freeglut.sourceforge.net/).
+    this->argc = argc;
+    this->argv = argv;
+    this->debug = debug;
+    this->camera = camera;
+    this->ip = "tcp://" + ip + ":" + port;
+    this->simple_sim = simple_sim;
+    if (simple_sim) {
+        this->numRobots = 1;
+    } else {
+        this->numRobots = 3;
+    }
+
     //! Inicializa o time 1
-    for(int i = 0 ; i < 3 ; i++){
+    for(int i = 0 ; i < this->numRobots ; i++){
         Robot robot;
         robot.id = i;
         robot.team = BLUE;
@@ -50,10 +74,9 @@ Graphics::Graphics(){
 
         robots.push_back(robot);
     }
-
-
+    
     //! Inicializa o time 2
-    for(int i = 0 ; i < 3 ; i++){
+    for(int i = 0 ; i < this->numRobots ; i++){
         Robot robot;
         robot.id = i;
         robot.team = YELLOW;
@@ -68,25 +91,7 @@ Graphics::Graphics(){
 
         robots.push_back(robot);
     }
-
-    debug = false;
-
-    static_name_team_1 = name_team_1 = "Yellow";
-    static_name_team_2 = name_team_2 = "Blue";
-
-    static_score_team_1 = static_score_team_1 = score_team_1 = score_team_2 = 0;
-    situation = 0;
-}
-
-//! Inicializa as variaveis de controle, a thread de desenho e as threads de recebimento de informações
-void Graphics::init(int argc, char** argv, bool debug, string camera, string ip, string port){
-    //! argc e argv da função main devido a glutInit. Veja: [freeglut](http://freeglut.sourceforge.net/).
-    this->argc = argc;
-    this->argv = argv;
-    this->debug = debug;
-    this->camera = camera;
-    this->ip = "tcp://" + ip + ":" + port;
-
+    
     cameraStatic = camera;
     staticDebug = this->debug;
 
@@ -245,7 +250,7 @@ void Graphics::state_thread(){
         v_ball.y = global_state.balls(0).v_pose().x();
 
         //! Atualiza as posições dos robôs
-        for(int i = 0 ; i < 3 ; i++){
+        for(int i = 0 ; i < this->numRobots ; i++){
             robots.at(i).team = YELLOW;
             robots.at(i).pose.x = global_state.robots_yellow(i).pose().y() - (130/2.0);
             robots.at(i).pose.y = global_state.robots_yellow(i).pose().x() - (170/2.0);
@@ -254,13 +259,13 @@ void Graphics::state_thread(){
             robots.at(i).rgb_color.rgb[1] = global_state.robots_yellow(i).color().g();
             robots.at(i).rgb_color.rgb[2] = global_state.robots_yellow(i).color().b();
 
-            robots.at(i+3).team = BLUE;
-            robots.at(i+3).pose.x = global_state.robots_blue(i).pose().y() - (130/2.0);
-            robots.at(i+3).pose.y = global_state.robots_blue(i).pose().x() - (170/2.0);
-            robots.at(i+3).pose.yaw = global_state.robots_blue(i).pose().yaw()*180.0/M_PI;
-            robots.at(i+3).rgb_color.rgb[0] = global_state.robots_blue(i).color().r();
-            robots.at(i+3).rgb_color.rgb[1] = global_state.robots_blue(i).color().g();
-            robots.at(i+3).rgb_color.rgb[2] = global_state.robots_blue(i).color().b();
+            robots.at(i+this->numRobots).team = BLUE;
+            robots.at(i+this->numRobots).pose.x = global_state.robots_blue(i).pose().y() - (130/2.0);
+            robots.at(i+this->numRobots).pose.y = global_state.robots_blue(i).pose().x() - (170/2.0);
+            robots.at(i+this->numRobots).pose.yaw = global_state.robots_blue(i).pose().yaw()*180.0/M_PI;
+            robots.at(i+this->numRobots).rgb_color.rgb[0] = global_state.robots_blue(i).color().r();
+            robots.at(i+this->numRobots).rgb_color.rgb[1] = global_state.robots_blue(i).color().g();
+            robots.at(i+this->numRobots).rgb_color.rgb[2] = global_state.robots_blue(i).color().b();
         }
 
         //! Se saiu um gol do time amarelo do VSS-Simulator, atualiza o placar do amarelo

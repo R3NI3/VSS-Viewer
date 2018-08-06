@@ -13,22 +13,23 @@
 using namespace std;
 
 //! Efetua a leitura dos parâmetros de execução
-bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, string *port);
+bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, string *port, bool *simple_sim);
 
 int main(int argc, char** argv){
 	bool debug;
+    bool simple_sim;
     string camera;
     string ip;
     string port;
 
-	if(argParse(argc, argv, &debug, &camera, &ip, &port)){
+	if(argParse(argc, argv, &debug, &camera, &ip, &port, &simple_sim)){
 	    Graphics graphics;
-	    graphics.init(argc, argv, debug, camera, ip, port);
+	    graphics.init(argc, argv, debug, camera, ip, port, simple_sim);
     }
 	return 0;
 }
 
-bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, string *port){
+bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, string *port, bool *simple_sim){
     namespace bpo = boost::program_options;
 
     //! Declara as opções de inicialização
@@ -38,7 +39,8 @@ bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, st
         ("camera,c", bpo::value<std::string>()->default_value("tv"), "(Optional) Specify the camera that you want, may be <tv> or <top>.")
         ("ip_state,i", bpo::value<std::string>()->default_value("localhost"), "(Optional) Specify the IP from pc it's running VSS-Vision or VSS-Simulator.")
         ("port,p", bpo::value<std::string>()->default_value("5555"), "(Optional) Specify the Port to connect from pc it's running VSS-Vision or VSS-Simulator.")
-        ("debug,d", "(Optional) open the debug rotine");
+        ("debug,d", "(Optional) open the debug rotine")
+        ("simple,s", "(Optional) set simple game");
     bpo::variables_map vm;
     bpo::store(bpo::parse_command_line(argc, argv, desc), vm);
     bpo::notify(vm);
@@ -52,6 +54,11 @@ bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, st
     //! Ativa o modo de debug
     if (vm.count("debug")){
         *debug = true;
+    }
+
+    //! Ativa o modo de debug
+    if (vm.count("simple")){
+        *simple_sim = true;
     }
 
     //! Define a camera que será utilizada
