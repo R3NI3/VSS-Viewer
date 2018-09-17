@@ -13,23 +13,24 @@
 using namespace std;
 
 //! Efetua a leitura dos parâmetros de execução
-bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, string *port, bool *simple_sim);
+bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, string *port, int *team1, int *team2);
 
 int main(int argc, char** argv){
 	bool debug;
-    bool simple_sim;
+    int team1;
+    int team2;
     string camera;
     string ip;
     string port;
 
-	if(argParse(argc, argv, &debug, &camera, &ip, &port, &simple_sim)){
+	if(argParse(argc, argv, &debug, &camera, &ip, &port, &team1, &team2)){
 	    Graphics graphics;
-	    graphics.init(argc, argv, debug, camera, ip, port, simple_sim);
+	    graphics.init(argc, argv, debug, camera, ip, port, team1, team2);
     }
 	return 0;
 }
 
-bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, string *port, bool *simple_sim){
+bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, string *port, int *team1, int *team2){
     namespace bpo = boost::program_options;
 
     //! Declara as opções de inicialização
@@ -40,7 +41,8 @@ bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, st
         ("ip_state,i", bpo::value<std::string>()->default_value("localhost"), "(Optional) Specify the IP from pc it's running VSS-Vision or VSS-Simulator.")
         ("port,p", bpo::value<std::string>()->default_value("5555"), "(Optional) Specify the Port to connect from pc it's running VSS-Vision or VSS-Simulator.")
         ("debug,d", "(Optional) open the debug rotine")
-        ("simple,s", "(Optional) set simple game");
+        ("team1,m", bpo::value<int>()->default_value(3), "Number of players team 1")
+        ("team2,o", bpo::value<int>()->default_value(3), "Number of players team 2");
     bpo::variables_map vm;
     bpo::store(bpo::parse_command_line(argc, argv, desc), vm);
     bpo::notify(vm);
@@ -56,10 +58,9 @@ bool argParse(int argc, char** argv, bool *debug, string *camera, string *ip, st
         *debug = true;
     }
 
-    //! Ativa o modo de debug
-    if (vm.count("simple")){
-        *simple_sim = true;
-    }
+    *team1 = vm["team1"].as<int>();
+
+    *team2 = vm["team2"].as<int>();
 
     //! Define a camera que será utilizada
     *camera = vm["camera"].as<string>();

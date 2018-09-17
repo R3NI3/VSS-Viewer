@@ -44,22 +44,19 @@ Graphics::Graphics(){
 }
 
 //! Inicializa as variaveis de controle, a thread de desenho e as threads de recebimento de informações
-void Graphics::init(int argc, char** argv, bool debug, string camera, string ip, string port, bool simple_sim){
+void Graphics::init(int argc, char** argv, bool debug, string camera, string ip, string port, int numRobotsTeam1, int numRobotsTeam2){
     //! argc e argv da função main devido a glutInit. Veja: [freeglut](http://freeglut.sourceforge.net/).
     this->argc = argc;
     this->argv = argv;
     this->debug = debug;
     this->camera = camera;
     this->ip = "tcp://" + ip + ":" + port;
-    this->simple_sim = simple_sim;
-    if (simple_sim) {
-        this->numRobots = 1;
-    } else {
-        this->numRobots = 3;
-    }
+    
+    this->numRobotsTeam1 = numRobotsTeam1;
+    this->numRobotsTeam2 = numRobotsTeam2;
 
     //! Inicializa o time 1
-    for(int i = 0 ; i < this->numRobots ; i++){
+    for(int i = 0 ; i < this->numRobotsTeam1 ; i++){
         Robot robot;
         robot.id = i;
         robot.team = BLUE;
@@ -76,7 +73,7 @@ void Graphics::init(int argc, char** argv, bool debug, string camera, string ip,
     }
     
     //! Inicializa o time 2
-    for(int i = 0 ; i < this->numRobots ; i++){
+    for(int i = 0 ; i < this->numRobotsTeam2 ; i++){
         Robot robot;
         robot.id = i;
         robot.team = YELLOW;
@@ -250,7 +247,7 @@ void Graphics::state_thread(){
         v_ball.y = global_state.balls(0).v_pose().x();
 
         //! Atualiza as posições dos robôs
-        for(int i = 0 ; i < this->numRobots ; i++){
+        for(int i = 0 ; i < this->numRobotsTeam1 ; i++){
             robots.at(i).team = YELLOW;
             robots.at(i).pose.x = global_state.robots_yellow(i).pose().y() - (130/2.0);
             robots.at(i).pose.y = global_state.robots_yellow(i).pose().x() - (170/2.0);
@@ -258,14 +255,15 @@ void Graphics::state_thread(){
             robots.at(i).rgb_color.rgb[0] = global_state.robots_yellow(i).color().r();
             robots.at(i).rgb_color.rgb[1] = global_state.robots_yellow(i).color().g();
             robots.at(i).rgb_color.rgb[2] = global_state.robots_yellow(i).color().b();
-
-            robots.at(i+this->numRobots).team = BLUE;
-            robots.at(i+this->numRobots).pose.x = global_state.robots_blue(i).pose().y() - (130/2.0);
-            robots.at(i+this->numRobots).pose.y = global_state.robots_blue(i).pose().x() - (170/2.0);
-            robots.at(i+this->numRobots).pose.yaw = global_state.robots_blue(i).pose().yaw()*180.0/M_PI;
-            robots.at(i+this->numRobots).rgb_color.rgb[0] = global_state.robots_blue(i).color().r();
-            robots.at(i+this->numRobots).rgb_color.rgb[1] = global_state.robots_blue(i).color().g();
-            robots.at(i+this->numRobots).rgb_color.rgb[2] = global_state.robots_blue(i).color().b();
+        }
+        for(int i = 0 ; i < this->numRobotsTeam2 ; i++){
+            robots.at(i+this->numRobotsTeam1).team = BLUE;
+            robots.at(i+this->numRobotsTeam1).pose.x = global_state.robots_blue(i).pose().y() - (130/2.0);
+            robots.at(i+this->numRobotsTeam1).pose.y = global_state.robots_blue(i).pose().x() - (170/2.0);
+            robots.at(i+this->numRobotsTeam1).pose.yaw = global_state.robots_blue(i).pose().yaw()*180.0/M_PI;
+            robots.at(i+this->numRobotsTeam1).rgb_color.rgb[0] = global_state.robots_blue(i).color().r();
+            robots.at(i+this->numRobotsTeam1).rgb_color.rgb[1] = global_state.robots_blue(i).color().g();
+            robots.at(i+this->numRobotsTeam1).rgb_color.rgb[2] = global_state.robots_blue(i).color().b();
         }
 
         //! Se saiu um gol do time amarelo do VSS-Simulator, atualiza o placar do amarelo

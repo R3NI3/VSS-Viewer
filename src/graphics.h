@@ -42,8 +42,8 @@ protected:
     float width;
     //! Altura da janela de desenho
     float height;
-    int numRobots=3;
-    bool simple_sim=false;
+    int numRobotsTeam1=3;
+    int numRobotsTeam2=3;
 
     //! Thread responsável para desenhar o ambiente
     thread *thread_draw;
@@ -79,7 +79,7 @@ public:
     Graphics();
 
     //! Método responsável por inicializar o software
-    void init(int argc, char** argv, bool debug, string camera, string ip, string port, bool simple_sim);
+    void init(int argc, char** argv, bool debug, string camera, string ip, string port, int team1, int team2);
 
     //! Método responsável por carregar a thread de desenho.
     void draw_thread();
